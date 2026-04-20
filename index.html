@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Evaluation Hub - Enterprise Neo-Brutalism</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- LEFT SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i data-lucide="cpu" class="logo-icon"></i>
+                <h2 id="sidebarTitle">AI Eval Hub</h2>
+                <button id="sidebarToggleBtn" class="icon-btn" style="margin-left: auto; color: white;"><i data-lucide="menu"></i></button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-mode="1" data-layout="a">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span class="nav-text">Mode 1: Pre-trained<br><small>Fine-tuned comparison</small></span>
+                </button>
+                <button class="nav-item" data-mode="2" data-layout="a">
+                    <i data-lucide="activity"></i>
+                    <span class="nav-text">Mode 2: Scratch<br><small>Train from scratch</small></span>
+                </button>
+                <button class="nav-item" data-mode="3" data-layout="b">
+                    <i data-lucide="message-square"></i>
+                    <span class="nav-text">Mode 3: SpikeGPT<br><small>Base Chat</small></span>
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer" id="sidebarFooter">
+                <p>Thực hiện bởi:<br><strong>Nguyễn Khang Hy <br> Phạm Quốc Nam</strong></p>
+                <i data-lucide="github"></i>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            
+            <!-- LAYOUT A: DASHBOARD (Mode 1 & 2) -->
+            <section id="layout-a" class="view-section active">
+                <header class="top-bar">
+                    <div class="input-wrapper">
+                        <i data-lucide="terminal" class="input-icon"></i>
+                        <input type="text" id="dashboardInput" placeholder="Nhập yêu cầu để đánh giá mô hình..." class="brutal-input">
+                        <button id="dashboardExecuteBtn" class="brutal-btn primary">
+                            <i data-lucide="play"></i> Thực thi
+                        </button>
+                    </div>
+                    
+                    <div class="prompt-chips">
+                        <span class="chips-label">Prompt Mẫu:</span>
+                        <button class="chip" data-prompt="Hủy cho mình cái đơn hàng mã #99812 nhé.">Hủy đơn hàng</button>
+                        <button class="chip" data-prompt="Mình muốn đặt 5 cái điện thoại iPhone-15-Pro, giao đến số 10 Phạm Ngọc Thạch, Quận 3, TP.HCM.">Đặt hàng iPhone</button>
+                        <button class="chip" data-prompt="Thống kê doanh thu từ ngày 2024-01-01 đến 2024-03-31 cho sếp xem nha.">Thống kê doanh thu</button>
+                        <button class="chip" data-prompt="Chào em, hôm qua chị có đặt đơn ORD-776, nhưng chị nhập sai địa chỉ. Đổi lại số lượng thành 2 cho chị nhé.">Cập nhật đơn hàng</button>
+                        <button class="chip" data-prompt="Kiểm tra xem mã SP-990 còn hàng không em?">Kiểm tra tồn kho</button>
+                    </div>
+                </header>
+
+                <div class="dashboard-content">
+                    <div id="dashboardLoading" class="loading-overlay hidden">
+                        <i data-lucide="loader" class="spin-icon"></i>
+                        <span>Hệ thống đang suy luận & thực thi...</span>
+                    </div>
+                    
+                    <div class="results-grid">
+                        <!-- Model 1: GPT-2 Medium -->
+                        <div class="result-col" id="col-gpt2_medium">
+                            <div class="col-header bg-yellow">
+                                <h3>GPT-2 Medium 
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden" style="color: #059669; width: 18px; margin-left: 4px; vertical-align: text-bottom;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden" style="color: #DC2626; width: 18px; margin-left: 4px; vertical-align: text-bottom;"></i>
+                                </h3>
+                                <div class="badge time-badge"><i data-lucide="clock"></i> <span class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body">
+                                <div class="card-block hidden">
+                                    <div class="block-title"><i data-lucide="brain"></i> Raw Output / AI Thought</div>
+                                    <div class="code-box raw-out"></div>
+                                </div>
+                                <div class="card-block tool-block">
+                                    <div class="block-title"><i data-lucide="wrench"></i> Action / Tool Call</div>
+                                    <div class="code-box json-out highlight"></div>
+                                </div>
+                                <div class="card-block exec-block">
+                                    <div class="block-title"><i data-lucide="terminal-square"></i> System Execution</div>
+                                    <div class="code-box exec-out"></div>
+                                </div>
+                                <button class="brutal-btn w-full detail-btn mt-auto" data-target="gpt2_medium">Xem chi tiết</button>
+                            </div>
+                        </div>
+
+                        <!-- Model 2: GPT-2 Small -->
+                        <div class="result-col" id="col-gpt2_small">
+                            <div class="col-header bg-mint">
+                                <h3>GPT-2 Small
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden" style="color: #059669; width: 18px; margin-left: 4px; vertical-align: text-bottom;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden" style="color: #DC2626; width: 18px; margin-left: 4px; vertical-align: text-bottom;"></i>
+                                </h3>
+                                <div class="badge time-badge"><i data-lucide="clock"></i> <span class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body">
+                                <div class="card-block hidden">
+                                    <div class="block-title"><i data-lucide="brain"></i> Raw Output / AI Thought</div>
+                                    <div class="code-box raw-out"></div>
+                                </div>
+                                <div class="card-block tool-block">
+                                    <div class="block-title"><i data-lucide="wrench"></i> Action / Tool Call</div>
+                                    <div class="code-box json-out highlight"></div>
+                                </div>
+                                <div class="card-block exec-block">
+                                    <div class="block-title"><i data-lucide="terminal-square"></i> System Execution</div>
+                                    <div class="code-box exec-out"></div>
+                                </div>
+                                <button class="brutal-btn w-full detail-btn mt-auto" data-target="gpt2_small">Xem chi tiết</button>
+                            </div>
+                        </div>
+
+                        <!-- Model 3: SpikeGPT -->
+                        <div class="result-col" id="col-spikegpt">
+                            <div class="col-header bg-pink">
+                                <h3>SpikeGPT 216M
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden" style="color: #059669; width: 18px; margin-left: 4px; vertical-align: text-bottom;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden" style="color: #DC2626; width: 18px; margin-left: 4px; vertical-align: text-bottom;"></i>
+                                </h3>
+                                <div class="badge time-badge"><i data-lucide="clock"></i> <span class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body">
+                                <div class="card-block hidden">
+                                    <div class="block-title"><i data-lucide="brain"></i> Raw Output / AI Thought</div>
+                                    <div class="code-box raw-out"></div>
+                                </div>
+                                <div class="card-block tool-block">
+                                    <div class="block-title"><i data-lucide="wrench"></i> Action / Tool Call</div>
+                                    <div class="code-box json-out highlight"></div>
+                                </div>
+                                <div class="card-block exec-block">
+                                    <div class="block-title"><i data-lucide="terminal-square"></i> System Execution</div>
+                                    <div class="code-box exec-out"></div>
+                                </div>
+                                <button class="brutal-btn w-full detail-btn mt-auto" data-target="spikegpt">Xem chi tiết</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- LAYOUT B: CHAT (Mode 3) -->
+            <section id="layout-b" class="view-section hidden">
+                <div class="chat-container">
+                    <header class="chat-header">
+                        <h2>SpikeGPT Base Chat</h2>
+                        <span class="badge"><i data-lucide="zap"></i> SNN Architecture</span>
+                    </header>
+                    
+                    <div class="chat-history" id="chatHistory">
+                        <div class="chat-bubble ai">
+                            <div class="bubble-avatar"><i data-lucide="bot"></i></div>
+                            <div class="bubble-content">Hello, I am SpikeGPT. How can I help you today?</div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-area">
+                        <div class="input-wrapper">
+                            <input type="text" id="chatInput" placeholder="Nhập tin nhắn..." class="brutal-input">
+                            <button id="chatSendBtn" class="brutal-btn primary square">
+                                <i data-lucide="send"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL CHI TIẾT -->
+    <div id="detailModal" class="modal hidden">
+        <div class="modal-dialog">
+            <div class="modal-header bg-dark">
+                <h2 id="modalTitle" style="color: white;">Chi tiết</h2>
+                <button id="closeModal" class="icon-btn"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="card-block">
+                    <div class="block-title">Raw Output</div>
+                    <div id="modalRaw" class="code-box large"></div>
+                </div>
+                <div class="card-block mt-4">
+                    <div class="block-title">Parsed Tool Script</div>
+                    <div id="modalTool" class="code-box large highlight"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Init Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
