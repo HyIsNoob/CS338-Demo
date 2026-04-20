@@ -1,0 +1,91 @@
+-- ========================================================
+-- SCRIPT MASTER RESET DATABASE (PHỤC VỤ DEMO ĐỒ ÁN)
+-- Tự động xóa sạch và nạp lại toàn bộ dữ liệu mẫu
+-- ========================================================
+
+-- 1. DỌN DẸP SẠCH SẼ BẢNG CŨ (Xóa orders trước để tránh lỗi khóa ngoại)
+DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
+
+-- 2. TẠO LẠI BẢNG SẢN PHẨM (products)
+CREATE TABLE products (
+    product_id TEXT PRIMARY KEY,
+    name TEXT,
+    category TEXT,
+    stock INTEGER,
+    price BIGINT
+);
+
+-- 3. TẠO LẠI BẢNG ĐƠN HÀNG (orders)
+CREATE TABLE orders (
+    order_id TEXT PRIMARY KEY,
+    product_id TEXT REFERENCES products(product_id),
+    quantity INTEGER,
+    total_price BIGINT,
+    address TEXT,
+    status TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
+);
+
+-- 4. BƠM DATA SẢN PHẨM (Bao gồm các mã dành cho Prompt Demo)
+INSERT INTO products (product_id, name, category, stock, price) VALUES
+('SP-990', 'Tai nghe Bluetooth Sony Cao Cấp', 'Âm thanh', 42, 1500000),
+('IPHONE-15-PRO', 'Apple iPhone 15 Pro 256GB', 'Điện thoại', 50, 28000000),
+('SP-101', 'iPhone 15 Pro Max 256GB', 'Điện thoại', 45, 29000000),
+('SP-102', 'iPhone 15 128GB', 'Điện thoại', 120, 20000000),
+('SP-103', 'Samsung Galaxy S24 Ultra', 'Điện thoại', 30, 31000000),
+('SP-104', 'Samsung Galaxy Z Fold 5', 'Điện thoại', 0, 40000000), -- Hết hàng
+('SP-201', 'MacBook Air M3 13-inch', 'Laptop', 25, 27500000),
+('SP-202', 'MacBook Pro M3 Pro 14-inch', 'Laptop', 15, 49000000),
+('SP-203', 'Dell XPS 15', 'Laptop', 10, 45000000),
+('SP-204', 'Asus ROG Strix G15', 'Laptop', 0, 32000000), -- Hết hàng
+('SP-301', 'iPad Pro 11-inch M2', 'Tablet', 50, 22000000),
+('SP-302', 'Samsung Galaxy Tab S9', 'Tablet', 40, 19000000),
+('SP-401', 'AirPods Pro 2', 'Âm thanh', 200, 5500000),
+('SP-402', 'Sony WH-1000XM5', 'Âm thanh', 60, 7500000),
+('SP-403', 'Marshall Stanmore III', 'Âm thanh', 35, 9500000),
+('SP-501', 'Apple Watch Series 9', 'Smartwatch', 80, 10000000),
+('SP-502', 'Garmin Fenix 7', 'Smartwatch', 20, 17000000),
+('SP-601', 'Chuột Logitech MX Master 3S', 'Phụ kiện', 150, 2500000),
+('SP-602', 'Bàn phím cơ Keychron Q1', 'Phụ kiện', 45, 4000000),
+('SP-603', 'Cáp sạc Anker Type-C 100W', 'Phụ kiện', 300, 350000),
+('SP-604', 'Pin dự phòng Magsafe 10000mAh', 'Phụ kiện', 120, 1200000),
+('SP-701', 'Màn hình LG 27 inch 4K', 'Màn hình', 25, 8000000);
+
+-- 5. BƠM DATA ĐƠN HÀNG 
+INSERT INTO orders (order_id, product_id, quantity, total_price, address, status, created_at) VALUES
+-- 2 Đơn hàng cố định phục vụ cho Test Case Hủy/Cập nhật của hội đồng
+('99812', 'SP-990', 1, 1500000, '123 Đường ABC, Quận 1', 'Đang xử lý', NOW()),
+('ORD-776', 'SP-990', 1, 1500000, 'Địa chỉ bị sai lúc đặt', 'Chờ xác nhận', NOW()),
+
+-- 30 Đơn hàng làm mồi để test Tool Thống Kê Doanh Thu (revenue_analysis)
+('ORD-10001', 'SP-101', 1, 29000000, '123 Lê Lợi, Q1, HCM', 'Giao hàng thành công', NOW() - INTERVAL '30 days'),
+('ORD-10002', 'SP-401', 2, 11000000, '45 Võ Văn Ngân, Thủ Đức', 'Giao hàng thành công', NOW() - INTERVAL '28 days'),
+('ORD-10003', 'SP-201', 1, 27500000, 'Ký túc xá khu A, ĐHQG', 'Đã hủy', NOW() - INTERVAL '25 days'),
+('ORD-10004', 'SP-301', 1, 22000000, '789 Nguyễn Văn Linh, Q7', 'Giao hàng thành công', NOW() - INTERVAL '20 days'),
+('ORD-10005', 'SP-601', 3, 7500000, 'Toà nhà Bitexco, Q1', 'Giao hàng thành công', NOW() - INTERVAL '15 days'),
+('ORD-10006', 'SP-103', 1, 31000000, '12A Nguyễn Trãi, Q5', 'Giao hàng thành công', NOW() - INTERVAL '14 days'),
+('ORD-10007', 'SP-501', 1, 10000000, '99 Phan Đăng Lưu, Phú Nhuận', 'Đang giao hàng', NOW() - INTERVAL '5 days'),
+('ORD-10008', 'SP-402', 1, 7500000, '10 Phạm Ngọc Thạch, Q3', 'Đang giao hàng', NOW() - INTERVAL '4 days'),
+('ORD-10009', 'SP-202', 1, 49000000, 'Vincom Center, Đồng Khởi', 'Đang xử lý', NOW() - INTERVAL '1 days'),
+('ORD-10010', 'SP-603', 5, 1750000, 'Làng Đại học Thủ Đức', 'Đang xử lý', NOW() - INTERVAL '12 hours'),
+('ORD-10011', 'SP-701', 2, 16000000, '33 Nguyễn Huệ, Q1', 'Đã lấy hàng', NOW() - INTERVAL '2 days'),
+('ORD-10012', 'SP-102', 1, 20000000, '88 Lê Văn Sỹ, Tân Bình', 'Giao hàng thành công', NOW() - INTERVAL '10 days'),
+('ORD-10013', 'SP-302', 1, 19000000, 'Chung cư Masteri, Q2', 'Đang giao hàng', NOW() - INTERVAL '3 days'),
+('ORD-10014', 'SP-502', 1, 17000000, 'Khu CN cao, Q9', 'Chờ xác nhận', NOW() - INTERVAL '2 hours'),
+('ORD-10015', 'SP-403', 2, 19000000, '112 Trần Hưng Đạo, Q5', 'Đã hủy', NOW() - INTERVAL '5 days'),
+('ORD-10016', 'SP-602', 1, 4000000, '77 Hai Bà Trưng, Q1', 'Giao hàng thành công', NOW() - INTERVAL '8 days'),
+('ORD-10017', 'SP-101', 2, 58000000, 'Biệt thự Thảo Điền, Q2', 'Đang xử lý', NOW() - INTERVAL '1 days'),
+('ORD-10018', 'SP-604', 3, 3600000, 'Ký túc xá khu B', 'Giao hàng thành công', NOW() - INTERVAL '7 days'),
+('ORD-10019', 'SP-203', 1, 45000000, 'Tòa nhà Landmark 81', 'Đã lấy hàng', NOW() - INTERVAL '2 days'),
+('ORD-10020', 'SP-301', 2, 44000000, '15 Lê Duẩn, Q1', 'Chờ xác nhận', NOW() - INTERVAL '1 hours'),
+('ORD-10021', 'SP-401', 1, 5500000, '22 Nguyễn Đình Chiểu, Q3', 'Đang giao hàng', NOW() - INTERVAL '4 days'),
+('ORD-10022', 'SP-103', 1, 31000000, 'Aeon Mall Tân Phú', 'Giao hàng thành công', NOW() - INTERVAL '18 days'),
+('ORD-10023', 'SP-701', 1, 8000000, 'Crescent Mall, Q7', 'Đang xử lý', NOW() - INTERVAL '20 hours'),
+('ORD-10024', 'SP-501', 2, 20000000, 'Đại học Bách Khoa', 'Đã hủy', NOW() - INTERVAL '6 days'),
+('ORD-10025', 'SP-201', 1, 27500000, '44 Điện Biên Phủ, Bình Thạnh', 'Giao hàng thành công', NOW() - INTERVAL '22 days'),
+('ORD-10026', 'SP-601', 1, 2500000, 'Trường DH KHTN', 'Giao hàng thành công', NOW() - INTERVAL '11 days'),
+('ORD-10027', 'SP-102', 3, 60000000, 'Sân bay Tân Sơn Nhất', 'Đang giao hàng', NOW() - INTERVAL '3 days'),
+('ORD-10028', 'SP-402', 2, 15000000, 'Ga Sài Gòn', 'Đã lấy hàng', NOW() - INTERVAL '2 days'),
+('ORD-10029', 'SP-302', 1, 19000000, 'Bến xe Miền Đông', 'Chờ xác nhận', NOW() - INTERVAL '4 hours'),
+('ORD-10030', 'SP-603', 10, 3500000, 'Chợ Bến Thành', 'Giao hàng thành công', NOW() - INTERVAL '9 days');
