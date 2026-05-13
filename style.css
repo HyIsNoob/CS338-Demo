@@ -612,6 +612,28 @@ body {
     pointer-events: none;
 }
 
+/* Per-card loading overlay */
+.card-loading-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px;
+    background: rgba(249,250,251,0.9);
+    border: 2px dashed #9CA3AF;
+    font-weight: 600;
+    color: #6B7280;
+    font-size: 0.9rem;
+}
+.card-loading-overlay .spin-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Layout D: display:block override since view-section uses flex */
+#layout-d.active { display: block !important; overflow-y: auto; }
+
+
 /* ==================================
         LAYOUT B: CHAT (Mode 3)
    ================================== */

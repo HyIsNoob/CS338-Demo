@@ -1,0 +1,24 @@
+=== BÁO CÁO ĐÁNH GIÁ MÔ HÌNH: Nohead78(best) ===
+Cấu hình HeadQK: 0
+----------------------------------------
+1. Sinh JSON hợp lệ (Valid JSON) : 100.00%
+2. Chọn đúng Tool (Intent Acc)   : 86.62%
+3. Copy đúng ID (Args Exact Match): 0.00%
+----------------------------------------
+Precision (Weighted): 0.8781
+Recall (Weighted)   : 0.8662
+F1 Score (Weighted) : 0.8659
+----------------------------------------
+CHI TIẾT PHÂN LOẠI TOOL:
+                  precision    recall  f1-score   support
+
+ check_inventory       0.99      0.76      0.86       877
+    create_order       1.00      0.89      0.94       832
+    delete_order       0.83      0.74      0.78       840
+       get_order       0.72      0.82      0.76       810
+revenue_analysis       0.81      1.00      0.90       789
+    update_order       0.91      1.00      0.95       852
+
+        accuracy                           0.87      5000
+       macro avg       0.88      0.87      0.87      5000
+    weighted avg       0.88      0.87      0.87      5000

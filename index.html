@@ -1,125 +1,126 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Evaluation Hub - Enterprise Neo-Brutalism</title>
-    
-    <!-- Fonts -->
+    <title>AI Evaluation Hub - CS338</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-    
-    <!-- Icons (Lucide) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- CSS -->
-    <link rel="stylesheet" href="style.css?v=1.1">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css?v=2.0">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 </head>
+
 <body>
     <div class="app-container">
+
         <!-- LEFT SIDEBAR -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <i data-lucide="cpu" class="logo-icon"></i>
                 <h2 id="sidebarTitle">AI Eval Hub</h2>
-                <button id="sidebarToggleBtn" class="icon-btn" style="margin-left: auto; color: white;"><i data-lucide="menu"></i></button>
+                <button id="sidebarToggleBtn" class="icon-btn" style="margin-left: auto; color: white;"><i
+                        data-lucide="menu"></i></button>
             </div>
-            
             <nav class="sidebar-nav">
                 <button class="nav-item active" data-mode="1" data-layout="a">
                     <i data-lucide="bar-chart-2"></i>
-                    <span class="nav-text">Mode 1: Pre-trained<br><small>Fine-tuned comparison</small></span>
+                    <span class="nav-text">Mode 1: GPT-2<br><small>Small vs Medium Finetune</small></span>
                 </button>
-                <button class="nav-item" data-mode="2" data-layout="a">
+                <button class="nav-item" data-mode="2" data-layout="b">
                     <i data-lucide="activity"></i>
-                    <span class="nav-text">Mode 2: Scratch<br><small>Train from scratch</small></span>
+                    <span class="nav-text">Mode 2: SpikeGPT<br><small>4 Model Comparison</small></span>
                 </button>
-                <button class="nav-item" data-mode="3" data-layout="b">
-                    <i data-lucide="message-square"></i>
-                    <span class="nav-text">Mode 3: SpikeGPT<br><small>Base Chat</small></span>
-                </button>
-                <button class="nav-item" data-mode="4" data-layout="c">
+                <button class="nav-item" data-mode="3" data-layout="c">
                     <i data-lucide="bot"></i>
-                    <span class="nav-text">Mode 4: Agency<br><small>Chatbot Agency</small></span>
+                    <span class="nav-text">Mode 3: Agency<br><small>Chatbot Agency</small></span>
+                </button>
+                <button class="nav-item" data-mode="4" data-layout="d">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span class="nav-text">Mode 4: Kết quả<br><small>Eval 5000 mẫu OOD</small></span>
                 </button>
             </nav>
-            
             <div class="sidebar-footer" id="sidebarFooter">
-                <p>Thực hiện bởi:<br><strong>Nguyễn Khang Hy <br> Phạm Quốc Nam</strong></p>
-                <i data-lucide="github"></i>
+                <div style="width:100%;">
+                    <button id="backendStatusBtn" onclick="checkBackendStatus()" style="
+                        width:100%; margin-bottom:12px; padding:10px 12px;
+                        background:#1F2937; border:2px solid #374151; color:#9CA3AF;
+                        font-family:inherit; font-size:0.8rem; font-weight:600;
+                        cursor:pointer; display:flex; align-items:center; gap:8px;
+                        transition:all 0.15s; text-transform:uppercase; letter-spacing:0.05em;
+                    ">
+                        <span id="backendStatusDot"
+                            style="width:10px;height:10px;border-radius:50%;background:#6B7280;flex-shrink:0;"></span>
+                        <span id="backendStatusText">Kiểm tra Backend</span>
+                    </button>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <p style="font-size:0.8rem;">Thực hiện bởi:<br><strong>Nguyễn Khang Hy <br> Phạm Quốc
+                                Nam</strong></p>
+                        <i data-lucide="code-2"></i>
+                    </div>
+                </div>
             </div>
         </aside>
 
-        <!-- MAIN CONTENT AREA -->
+        <!-- MAIN CONTENT -->
         <main class="main-content">
-            
-            <!-- LAYOUT A: DASHBOARD (Mode 1 & 2) -->
+
+            <!-- LAYOUT A: GPT-2 COMPARISON (Mode 1) -->
             <section id="layout-a" class="view-section active w-full h-full">
                 <header class="top-bar">
                     <div class="input-wrapper">
                         <i data-lucide="terminal" class="input-icon"></i>
-                        <input type="text" id="dashboardInput" placeholder="Nhập yêu cầu để đánh giá mô hình..." class="brutal-input">
+                        <input type="text" id="dashboardInput"
+                            placeholder="Nhập yêu cầu để so sánh GPT-2 Small vs Medium..." class="brutal-input">
                         <button id="dashboardExecuteBtn" class="brutal-btn primary">
                             <i data-lucide="play"></i> Thực thi
                         </button>
                     </div>
-                    
                     <div class="prompt-chips">
                         <span class="chips-label">Prompt Mẫu:</span>
-                        <button class="chip" data-prompt="Hủy cho mình cái đơn hàng mã #99812 nhé.">Hủy đơn hàng</button>
-                        <button class="chip" data-prompt="Mình muốn đặt 5 cái điện thoại iPhone-15-Pro, giao đến số 10 Phạm Ngọc Thạch, Quận 3, TP.HCM.">Đặt hàng iPhone</button>
-                        <button class="chip" data-prompt="Thống kê doanh thu từ ngày 2024-01-01 đến 2024-03-31 cho sếp xem nha.">Thống kê doanh thu</button>
-                        <button class="chip" data-prompt="Chào em, hôm qua chị có đặt đơn ORD-776, nhưng chị nhập sai địa chỉ. Đổi lại số lượng thành 2 cho chị nhé.">Cập nhật đơn hàng</button>
-                        <button class="chip" data-prompt="Kiểm tra xem mã SP-990 còn hàng không em?">Kiểm tra tồn kho</button>
+                        <button class="chip" data-prompt="Hủy cho mình cái đơn hàng mã #99812 nhé.">Hủy đơn
+                            hàng</button>
+                        <button class="chip"
+                            data-prompt="Mình muốn đặt 5 cái điện thoại iPhone-15-Pro, giao đến số 10 Phạm Ngọc Thạch, Quận 3, TP.HCM.">Đặt
+                            hàng iPhone</button>
+                        <button class="chip"
+                            data-prompt="Thống kê doanh thu từ ngày 2024-01-01 đến 2024-03-31 cho sếp xem nha.">Thống kê
+                            doanh thu</button>
+                        <button class="chip"
+                            data-prompt="Chào em, hôm qua chị có đặt đơn ORD-776, nhưng chị nhập sai địa chỉ. Đổi lại số lượng thành 2 cho chị nhé.">Cập
+                            nhật đơn hàng</button>
+                        <button class="chip" data-prompt="Kiểm tra xem mã SP-990 còn hàng không em?">Kiểm tra tồn
+                            kho</button>
                     </div>
                 </header>
-
                 <div class="dashboard-content">
                     <div id="dashboardLoading" class="loading-overlay hidden">
                         <i data-lucide="loader" class="spin-icon"></i>
                         <span>Hệ thống đang suy luận & thực thi...</span>
                     </div>
-                    
-                    <div class="results-grid">
-                        <!-- Model 1: GPT-2 Medium -->
-                        <div class="result-col" id="col-gpt2_medium">
-                            <div class="col-header bg-yellow">
-                                <h3>GPT-2 Medium 
-                                    <i data-lucide="check-circle" class="status-icon success-icon hidden" style="color: #059669; width: 18px; margin-left: 4px; vertical-align: text-bottom;"></i>
-                                    <i data-lucide="x-circle" class="status-icon error-icon hidden" style="color: #DC2626; width: 18px; margin-left: 4px; vertical-align: text-bottom;"></i>
-                                </h3>
-                                <div class="badge time-badge"><i data-lucide="clock"></i> <span class="time-val">--s</span></div>
-                            </div>
-                            <div class="col-body">
-                                <div class="card-block hidden">
-                                    <div class="block-title"><i data-lucide="brain"></i> Raw Output / AI Thought</div>
-                                    <div class="code-box raw-out"></div>
-                                </div>
-                                <div class="card-block tool-block">
-                                    <div class="block-title"><i data-lucide="wrench"></i> Action / Tool Call</div>
-                                    <div class="code-box json-out highlight"></div>
-                                </div>
-                                <div class="card-block exec-block">
-                                    <div class="block-title"><i data-lucide="terminal-square"></i> System Execution</div>
-                                    <div class="code-box exec-out"></div>
-                                </div>
-                                <button class="brutal-btn w-full detail-btn mt-auto" data-target="gpt2_medium">Xem chi tiết</button>
-                            </div>
-                        </div>
+                    <div class="results-grid" style="grid-template-columns: repeat(2, 1fr);">
 
-                        <!-- Model 2: GPT-2 Small -->
+                        <!-- GPT-2 Small Finetune -->
                         <div class="result-col" id="col-gpt2_small">
                             <div class="col-header bg-mint">
-                                <h3>GPT-2 Small
-                                    <i data-lucide="check-circle" class="status-icon success-icon hidden" style="color: #059669; width: 18px; margin-left: 4px; vertical-align: text-bottom;"></i>
-                                    <i data-lucide="x-circle" class="status-icon error-icon hidden" style="color: #DC2626; width: 18px; margin-left: 4px; vertical-align: text-bottom;"></i>
+                                <h3>GPT-2 Small (124M)
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden"
+                                        style="color:#059669;width:18px;margin-left:4px;vertical-align:text-bottom;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden"
+                                        style="color:#DC2626;width:18px;margin-left:4px;vertical-align:text-bottom;"></i>
                                 </h3>
-                                <div class="badge time-badge"><i data-lucide="clock"></i> <span class="time-val">--s</span></div>
+                                <div class="badge time-badge"><i data-lucide="clock"></i> <span
+                                        class="time-val">--s</span></div>
                             </div>
                             <div class="col-body">
                                 <div class="card-block hidden">
-                                    <div class="block-title"><i data-lucide="brain"></i> Raw Output / AI Thought</div>
+                                    <div class="block-title"><i data-lucide="brain"></i> Raw Output</div>
                                     <div class="code-box raw-out"></div>
                                 </div>
                                 <div class="card-block tool-block">
@@ -127,25 +128,32 @@
                                     <div class="code-box json-out highlight"></div>
                                 </div>
                                 <div class="card-block exec-block">
-                                    <div class="block-title"><i data-lucide="terminal-square"></i> System Execution</div>
+                                    <div class="block-title"><i data-lucide="terminal-square"></i> System Execution
+                                    </div>
                                     <div class="code-box exec-out"></div>
                                 </div>
-                                <button class="brutal-btn w-full detail-btn mt-auto" data-target="gpt2_small">Xem chi tiết</button>
+                                <div class="card-loading-overlay hidden" id="cloading-gpt2_small"><i
+                                        data-lucide="loader" class="spin-icon"></i><span>Đang suy luận...</span></div>
+                                <button class="brutal-btn w-full detail-btn mt-auto" data-target="gpt2_small">Xem chi
+                                    tiết</button>
                             </div>
                         </div>
 
-                        <!-- Model 3: SpikeGPT -->
-                        <div class="result-col" id="col-spikegpt">
-                            <div class="col-header bg-pink">
-                                <h3>SpikeGPT 216M
-                                    <i data-lucide="check-circle" class="status-icon success-icon hidden" style="color: #059669; width: 18px; margin-left: 4px; vertical-align: text-bottom;"></i>
-                                    <i data-lucide="x-circle" class="status-icon error-icon hidden" style="color: #DC2626; width: 18px; margin-left: 4px; vertical-align: text-bottom;"></i>
+                        <!-- GPT-2 Medium Finetune -->
+                        <div class="result-col" id="col-gpt2_medium">
+                            <div class="col-header bg-yellow">
+                                <h3>GPT-2 Medium (355M)
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden"
+                                        style="color:#059669;width:18px;margin-left:4px;vertical-align:text-bottom;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden"
+                                        style="color:#DC2626;width:18px;margin-left:4px;vertical-align:text-bottom;"></i>
                                 </h3>
-                                <div class="badge time-badge"><i data-lucide="clock"></i> <span class="time-val">--s</span></div>
+                                <div class="badge time-badge"><i data-lucide="clock"></i> <span
+                                        class="time-val">--s</span></div>
                             </div>
                             <div class="col-body">
                                 <div class="card-block hidden">
-                                    <div class="block-title"><i data-lucide="brain"></i> Raw Output / AI Thought</div>
+                                    <div class="block-title"><i data-lucide="brain"></i> Raw Output</div>
                                     <div class="code-box raw-out"></div>
                                 </div>
                                 <div class="card-block tool-block">
@@ -153,70 +161,222 @@
                                     <div class="code-box json-out highlight"></div>
                                 </div>
                                 <div class="card-block exec-block">
-                                    <div class="block-title"><i data-lucide="terminal-square"></i> System Execution</div>
+                                    <div class="block-title"><i data-lucide="terminal-square"></i> System Execution
+                                    </div>
                                     <div class="code-box exec-out"></div>
                                 </div>
-                                <button class="brutal-btn w-full detail-btn mt-auto" data-target="spikegpt">Xem chi tiết</button>
+                                <div class="card-loading-overlay hidden" id="cloading-gpt2_medium"><i
+                                        data-lucide="loader" class="spin-icon"></i><span>Đang suy luận...</span></div>
+                                <button class="brutal-btn w-full detail-btn mt-auto" data-target="gpt2_medium">Xem chi
+                                    tiết</button>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </section>
 
-            <!-- LAYOUT B: CHAT (Mode 3) -->
-            <section id="layout-b" class="view-section hidden w-full h-full" style="align-items:center; justify-content:center;">
-                <div class="chat-container" style="width: 100%; max-width: 800px; height: 100%; display: flex; flex-direction: column;">
-                    <header class="chat-header">
-                        <h2>SpikeGPT Base Chat</h2>
-                        <span class="badge"><i data-lucide="zap"></i> SNN Architecture</span>
-                    </header>
-                    
-                    <div class="chat-history" id="chatHistory" style="flex: 1; overflow-y: auto; padding: 20px;">
-                        <div class="chat-bubble ai">
-                            <div class="bubble-avatar"><i data-lucide="bot"></i></div>
-                            <div class="bubble-content">Hello, I am SpikeGPT. How can I help you today?</div>
-                        </div>
-                    </div>
-                    
-                    <div class="chat-input-area" style="padding: 20px; display: flex; gap: 8px;">
-                        <input type="text" id="chatInput" placeholder="Nhập tin nhắn..." class="brutal-input" style="flex: 1;">
-                        <button id="chatSendBtn" class="brutal-btn primary square">
-                            <i data-lucide="send"></i>
+            <!-- LAYOUT B: SpikeGPT 4-MODEL COMPARISON (Mode 2) -->
+            <section id="layout-b" class="view-section hidden w-full h-full">
+                <header class="top-bar">
+                    <div class="input-wrapper">
+                        <i data-lucide="terminal" class="input-icon"></i>
+                        <input type="text" id="spikeInput"
+                            placeholder="Nhập yêu cầu để so sánh các biến thể SpikeGPT..." class="brutal-input">
+                        <button id="spikeExecuteBtn" class="brutal-btn primary">
+                            <i data-lucide="play"></i> Thực thi
                         </button>
                     </div>
+                    <div class="prompt-chips">
+                        <span class="chips-label">Prompt Mẫu:</span>
+                        <button class="chip spike-chip" data-prompt="Hủy cho mình cái đơn hàng mã #99812 nhé.">Hủy đơn
+                            hàng</button>
+                        <button class="chip spike-chip"
+                            data-prompt="Mình muốn đặt 5 cái điện thoại iPhone-15-Pro, giao đến số 10 Phạm Ngọc Thạch, Quận 3, TP.HCM.">Đặt
+                            hàng iPhone</button>
+                        <button class="chip spike-chip"
+                            data-prompt="Thống kê doanh thu từ ngày 2024-01-01 đến 2024-03-31 cho sếp xem nha.">Thống kê
+                            doanh thu</button>
+                        <button class="chip spike-chip" data-prompt="Kiểm tra xem mã SP-990 còn hàng không em?">Kiểm tra
+                            tồn kho</button>
+                    </div>
+                </header>
+                <div class="dashboard-content">
+                    <div id="spikeLoading" class="loading-overlay hidden">
+                        <i data-lucide="loader" class="spin-icon"></i>
+                        <span>SpikeGPT đang suy luận (O(N²) inference)... Vui lòng chờ.</span>
+                    </div>
+                    <div class="results-grid" style="grid-template-columns: repeat(2, 1fr);">
+
+                        <!-- Ep78 WITH HeadQK -->
+                        <div class="result-col" id="col-spike_ep78_hq">
+                            <div class="col-header bg-yellow">
+                                <h3>Scratch Ep78 <span style="font-size:0.75rem;opacity:0.8;">+ HeadQK</span>
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden"
+                                        style="color:#059669;width:18px;margin-left:4px;vertical-align:text-bottom;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden"
+                                        style="color:#DC2626;width:18px;margin-left:4px;vertical-align:text-bottom;"></i>
+                                </h3>
+                                <div class="badge time-badge"><i data-lucide="clock"></i> <span
+                                        class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body">
+                                <div class="card-block hidden">
+                                    <div class="block-title"><i data-lucide="brain"></i> Raw Output</div>
+                                    <div class="code-box raw-out"></div>
+                                </div>
+                                <div class="card-block tool-block">
+                                    <div class="block-title"><i data-lucide="wrench"></i> Action / Tool Call</div>
+                                    <div class="code-box json-out highlight"></div>
+                                </div>
+                                <div class="card-block exec-block">
+                                    <div class="block-title"><i data-lucide="terminal-square"></i> System Execution
+                                    </div>
+                                    <div class="code-box exec-out"></div>
+                                </div>
+                                <div class="card-loading-overlay hidden" id="cloading-spike_ep78_hq"><i
+                                        data-lucide="loader" class="spin-icon"></i><span>Đang suy luận...</span></div>
+                                <button class="brutal-btn w-full detail-btn mt-auto" data-target="spike_ep78_hq">Xem chi
+                                    tiết</button>
+                            </div>
+                        </div>
+
+                        <!-- Ep78 WITHOUT HeadQK -->
+                        <div class="result-col" id="col-spike_ep78_nohq">
+                            <div class="col-header bg-pink">
+                                <h3>Scratch Ep78 <span style="font-size:0.75rem;opacity:0.8;">No HeadQK</span>
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden"
+                                        style="color:#059669;width:18px;margin-left:4px;vertical-align:text-bottom;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden"
+                                        style="color:#DC2626;width:18px;margin-left:4px;vertical-align:text-bottom;"></i>
+                                </h3>
+                                <div class="badge time-badge"><i data-lucide="clock"></i> <span
+                                        class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body">
+                                <div class="card-block hidden">
+                                    <div class="block-title"><i data-lucide="brain"></i> Raw Output</div>
+                                    <div class="code-box raw-out"></div>
+                                </div>
+                                <div class="card-block tool-block">
+                                    <div class="block-title"><i data-lucide="wrench"></i> Action / Tool Call</div>
+                                    <div class="code-box json-out highlight"></div>
+                                </div>
+                                <div class="card-block exec-block">
+                                    <div class="block-title"><i data-lucide="terminal-square"></i> System Execution
+                                    </div>
+                                    <div class="code-box exec-out"></div>
+                                </div>
+                                <div class="card-loading-overlay hidden" id="cloading-spike_ep78_nohq"><i
+                                        data-lucide="loader" class="spin-icon"></i><span>Đang suy luận...</span></div>
+                                <button class="brutal-btn w-full detail-btn mt-auto" data-target="spike_ep78_nohq">Xem
+                                    chi tiết</button>
+                            </div>
+                        </div>
+
+                        <!-- Ep220 Scratch WITH HeadQK -->
+                        <div class="result-col" id="col-spike_ep220_hq">
+                            <div class="col-header bg-mint">
+                                <h3>Scratch Ep220 <span style="font-size:0.75rem;opacity:0.8;">+ HeadQK</span>
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden"
+                                        style="color:#059669;width:18px;margin-left:4px;vertical-align:text-bottom;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden"
+                                        style="color:#DC2626;width:18px;margin-left:4px;vertical-align:text-bottom;"></i>
+                                </h3>
+                                <div class="badge time-badge"><i data-lucide="clock"></i> <span
+                                        class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body">
+                                <div class="card-block hidden">
+                                    <div class="block-title"><i data-lucide="brain"></i> Raw Output</div>
+                                    <div class="code-box raw-out"></div>
+                                </div>
+                                <div class="card-block tool-block">
+                                    <div class="block-title"><i data-lucide="wrench"></i> Action / Tool Call</div>
+                                    <div class="code-box json-out highlight"></div>
+                                </div>
+                                <div class="card-block exec-block">
+                                    <div class="block-title"><i data-lucide="terminal-square"></i> System Execution
+                                    </div>
+                                    <div class="code-box exec-out"></div>
+                                </div>
+                                <div class="card-loading-overlay hidden" id="cloading-spike_ep220_hq"><i
+                                        data-lucide="loader" class="spin-icon"></i><span>Đang suy luận...</span></div>
+                                <button class="brutal-btn w-full detail-btn mt-auto" data-target="spike_ep220_hq">Xem
+                                    chi tiết</button>
+                            </div>
+                        </div>
+
+                        <!-- Ep220 Finetune WITH HeadQK -->
+                        <div class="result-col" id="col-spike_ft220_hq">
+                            <div class="col-header" style="background:#a78bfa;">
+                                <h3>Finetune Ep220 <span style="font-size:0.75rem;opacity:0.8;">+ HeadQK</span>
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden"
+                                        style="color:#059669;width:18px;margin-left:4px;vertical-align:text-bottom;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden"
+                                        style="color:#DC2626;width:18px;margin-left:4px;vertical-align:text-bottom;"></i>
+                                </h3>
+                                <div class="badge time-badge"><i data-lucide="clock"></i> <span
+                                        class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body">
+                                <div class="card-block hidden">
+                                    <div class="block-title"><i data-lucide="brain"></i> Raw Output</div>
+                                    <div class="code-box raw-out"></div>
+                                </div>
+                                <div class="card-block tool-block">
+                                    <div class="block-title"><i data-lucide="wrench"></i> Action / Tool Call</div>
+                                    <div class="code-box json-out highlight"></div>
+                                </div>
+                                <div class="card-block exec-block">
+                                    <div class="block-title"><i data-lucide="terminal-square"></i> System Execution
+                                    </div>
+                                    <div class="code-box exec-out"></div>
+                                </div>
+                                <div class="card-loading-overlay hidden" id="cloading-spike_ft220_hq"><i
+                                        data-lucide="loader" class="spin-icon"></i><span>Đang suy luận...</span></div>
+                                <button class="brutal-btn w-full detail-btn mt-auto" data-target="spike_ft220_hq">Xem
+                                    chi tiết</button>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </section>
 
-            <!-- LAYOUT C: CHATBOT AGENCY (Mode 4) -->
-            <section id="layout-c" class="view-section hidden w-full h-full" style="align-items:center; justify-content:center;">
-                <div class="chat-container" style="width: 100%; max-width: 1000px; height: 100%; display: flex; flex-direction: column;">
-                    <header class="chat-header" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 24px;">
-                        <div style="display: flex; gap: 12px; align-items: center;">
-                            <i data-lucide="bot" style="width: 28px; height: 28px;"></i>
+            <!-- LAYOUT C: CHATBOT AGENCY (Mode 3) -->
+            <section id="layout-c" class="view-section hidden w-full h-full"
+                style="align-items:center; justify-content:center;">
+                <div class="chat-container"
+                    style="width:100%; max-width:1000px; height:100%; display:flex; flex-direction:column;">
+                    <header class="chat-header"
+                        style="display:flex; justify-content:space-between; align-items:center; padding:16px 24px;">
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <i data-lucide="bot" style="width:28px; height:28px;"></i>
                             <select id="agencyModelSelect" class="brutal-select">
-                                <option value="gpt2_medium_pre" selected>GPT-2 Medium (Pretrain)</option>
-                                <option value="gpt2_medium_scr">GPT-2 Medium (Scratch)</option>
-                                <option value="gpt2_small_pre">GPT-2 Small (Pretrain)</option>
-                                <option value="gpt2_small_scr">GPT-2 Small (Scratch)</option>
-                                <option value="spikegpt_pre">SpikeGPT (Pretrain)</option>
-                                <option value="spikegpt_scr">SpikeGPT (Scratch)</option>
+                                <option value="gpt2_small">GPT-2 Small Finetune (124M)</option>
+                                <option value="gpt2_medium">GPT-2 Medium Finetune (355M)</option>
+                                <option value="spike_ep78_hq">SpikeGPT Scratch Ep78 + HeadQK</option>
+                                <option value="spike_ep78_nohq">SpikeGPT Scratch Ep78 No HeadQK</option>
+                                <option value="spike_ep220_hq">SpikeGPT Scratch Ep220 + HeadQK</option>
+                                <option value="spike_ft220_hq">SpikeGPT Finetune Ep220 + HeadQK</option>
                             </select>
                         </div>
-                        <button id="resetAgencyChatBtn" class="brutal-btn square" style="margin-left: auto;" title="Reset Chat">
+                        <button id="resetAgencyChatBtn" class="brutal-btn square" style="margin-left:auto;"
+                            title="Reset Chat">
                             <i data-lucide="rotate-ccw"></i>
                         </button>
                     </header>
-                    
                     <div class="chat-history" id="agencyChatHistory">
-                        <!-- Tin nhắn sẽ được thêm động -->
                         <div class="chat-bubble ai">
                             <div class="bubble-avatar"><i data-lucide="bot"></i></div>
-                            <div class="bubble-content">Xin chào, tôi là Chatbot Agency. Vui lòng chọn mô hình và bắt đầu giao tiếp!</div>
+                            <div class="bubble-content">Xin chào, tôi là Chatbot Agency. Vui lòng chọn mô hình và bắt
+                                đầu giao tiếp!</div>
                         </div>
                     </div>
-                    
-                    <div class="chat-input-area" style="display: flex; gap: 8px;">
-                        <input type="text" id="agencyChatInput" placeholder="Nhập yêu cầu từ người dùng..." class="brutal-input" style="flex: 1;">
+                    <div class="chat-input-area" style="display:flex; gap:8px;">
+                        <input type="text" id="agencyChatInput" placeholder="Nhập yêu cầu từ người dùng..."
+                            class="brutal-input" style="flex:1;">
                         <button id="agencyChatSendBtn" class="brutal-btn primary square">
                             <i data-lucide="send"></i>
                         </button>
@@ -227,11 +387,52 @@
         </main>
     </div>
 
+    <!-- LAYOUT D: EVAL RESULTS (Mode 4) -->
+    <section id="layout-d" class="view-section hidden w-full h-full"
+        style="overflow-y:auto;padding:24px;display:block;">
+        <div style="max-width:1400px;margin:0 auto;">
+            <div style="margin-bottom:20px;">
+                <h1 style="font-size:1.4rem;font-weight:700;">📊 Kết quả Đánh giá — 5,000 mẫu OOD</h1>
+                <p style="color:#6b7280;font-size:0.875rem;">Out-of-distribution test • 6 mô hình • Greedy decoding</p>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+                <div class="card-block" style="padding:16px;"><canvas id="chart-intent"></canvas></div>
+                <div class="card-block" style="padding:16px;"><canvas id="chart-f1"></canvas></div>
+                <div class="card-block" style="padding:16px;"><canvas id="chart-validjson"></canvas></div>
+                <div class="card-block" style="padding:16px;"><canvas id="chart-args"></canvas></div>
+            </div>
+            <div class="card-block" style="padding:0;margin-bottom:20px;overflow:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                    <thead>
+                        <tr style="background:#111827;color:white;">
+                            <th style="padding:10px 16px;text-align:left;">Mô hình</th>
+                            <th style="padding:10px 16px;text-align:center;">Valid JSON</th>
+                            <th style="padding:10px 16px;text-align:center;">Intent Acc</th>
+                            <th style="padding:10px 16px;text-align:center;">Args Exact</th>
+                            <th style="padding:10px 16px;text-align:center;">F1 Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eval-table-body"></tbody>
+                </table>
+            </div>
+            <div class="card-block" style="padding:20px;">
+                <h3 style="font-size:1rem;font-weight:600;margin-bottom:12px;">📈 Biểu đồ per Model</h3>
+                <div id="img-tabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"></div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                    <img id="img-performance" src="" style="width:100%;border:2px solid #111;border-radius:4px;"
+                        alt="Overall Performance">
+                    <img id="img-confusion" src="" style="width:100%;border:2px solid #111;border-radius:4px;"
+                        alt="Confusion Matrix">
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- MODAL CHI TIẾT -->
     <div id="detailModal" class="modal hidden">
         <div class="modal-dialog">
             <div class="modal-header bg-dark">
-                <h2 id="modalTitle" style="color: white;">Chi tiết</h2>
+                <h2 id="modalTitle" style="color:white;">Chi tiết</h2>
                 <button id="closeModal" class="icon-btn"><i data-lucide="x"></i></button>
             </div>
             <div class="modal-body">
@@ -247,12 +448,10 @@
         </div>
     </div>
 
-    <script src="app.js?v=1.1"></script>
+    <script src="app.js?v=2.0"></script>
     <script>
-        // Init Lucide Icons sau khi app.js đã load
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
+        if (typeof lucide !== 'undefined') { lucide.createIcons(); }
     </script>
 </body>
+
 </html>

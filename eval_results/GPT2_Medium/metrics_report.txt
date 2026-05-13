@@ -1,0 +1,23 @@
+=== BÁO CÁO ĐÁNH GIÁ MÔ HÌNH: gpt2-medium-agent ===
+----------------------------------------
+1. Sinh JSON hợp lệ (Valid JSON) : 100.00%
+2. Chọn đúng Tool (Intent Acc)   : 96.78%
+3. Copy đúng ID (Args Exact Match): 67.76%
+----------------------------------------
+Precision (Weighted): 0.9696
+Recall (Weighted)   : 0.9678
+F1 Score (Weighted) : 0.9678
+----------------------------------------
+CHI TIẾT PHÂN LOẠI TOOL:
+                  precision    recall  f1-score   support
+
+ check_inventory       1.00      0.89      0.94       877
+    create_order       1.00      0.99      0.99       832
+    delete_order       1.00      0.99      0.99       840
+       get_order       0.89      0.95      0.92       810
+revenue_analysis       0.98      1.00      0.99       789
+    update_order       0.95      1.00      0.97       852
+
+        accuracy                           0.97      5000
+       macro avg       0.97      0.97      0.97      5000
+    weighted avg       0.97      0.97      0.97      5000
