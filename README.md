@@ -25,7 +25,7 @@ Hệ thống hoạt động theo mô hình Client-Server. Bạn cần khởi đ�
 
 ### Bước 1: Khởi động Backend (Kaggle)
 
-1. Truy cập vào Kaggle Notebook của Backend tại đây: [**CS338 Demo Backend**](https://www.kaggle.com/code/hykhangg/cs338-demo).  
+1. Truy cập vào Kaggle Notebook của Backend tại đây: [**CS338 Demo Backend**](https://www.kaggle.com/code/thaidat733/cs338-demo).  
 2. Đảm bảo Kernel đang bật **GPU T4 x2** (hoặc P100) và có kết nối Internet.  
 3. Cần có một tài khoản [Ngrok](https://ngrok.com/) miễn phí. Đăng nhập và lấy đoạn mã Authtoken.  
 4. Trong Notebook Kaggle, tìm đến dòng cấu hình Ngrok và dán token của bạn vào:  
