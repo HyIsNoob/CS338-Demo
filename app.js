@@ -15,6 +15,10 @@ const EVAL_RESULTS = {
     spike_ft220_hq: { label:'SpikeGPT FT Ep220 +HQ',   color:'#c4b5fd', validJson:99.80,  intentAcc:94.10, argsExact:13.94, f1:94.15, imgDir:'220_Finetune'  },
 };
 
+const GPT2_MODELS = ['gpt2_small', 'gpt2_medium'];
+const SPIKE_MODELS = ['spike_ep78_hq', 'spike_ep78_nohq', 'spike_ep220_hq', 'spike_ft220_hq'];
+const ALL_MODELS  = [...GPT2_MODELS, ...SPIKE_MODELS];
+
 // ==========================================
 // BACKEND STATUS CHECK (global — gọi từ onclick)
 // ==========================================
@@ -31,19 +35,37 @@ async function checkBackendStatus() {
         const res = await fetch(API_BASE_URL + '/health', {
             method: 'GET',
             headers: { 'ngrok-skip-browser-warning': 'true' },
-            signal: AbortSignal.timeout(8000)
+            signal: AbortSignal.timeout(15000)
         });
         if (res.ok) {
             dot.style.background = '#10B981';
             dot.style.boxShadow  = '0 0 0 3px rgba(16,185,129,0.3)';
             text.textContent = 'Backend: Online ✓';
         } else {
-            throw new Error(`HTTP ${res.status}`);
+            // Fallback to / if /health fails
+            const resRoot = await fetch(API_BASE_URL + '/', {
+                method: 'GET',
+                headers: { 'ngrok-skip-browser-warning': 'true' },
+                signal: AbortSignal.timeout(5000)
+            });
+            if (resRoot.ok) {
+                dot.style.background = '#10B981';
+                dot.style.boxShadow  = '0 0 0 3px rgba(16,185,129,0.3)';
+                text.textContent = 'Backend: Online ✓';
+            } else {
+                throw new Error(`HTTP ${res.status}`);
+            }
         }
     } catch (err) {
         dot.style.background = '#EF4444';
         dot.style.boxShadow  = '0 0 0 3px rgba(239,68,68,0.3)';
-        text.textContent = err.name === 'TimeoutError' ? 'Timeout — Chưa chạy' : 'Backend: Offline ✗';
+        if (err.name === 'TimeoutError') {
+            text.textContent = 'Timeout — Chưa chạy';
+        } else if (err.message.includes('Failed to fetch')) {
+            text.textContent = 'CORS/Ngrok Error ✗';
+        } else {
+            text.textContent = 'Backend: Offline ✗';
+        }
         console.warn('Backend check:', err.message);
     }
 }
@@ -66,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const layoutB = document.getElementById('layout-b');
     const layoutC = document.getElementById('layout-c');
     const layoutD = document.getElementById('layout-d');
+    const layoutE = document.getElementById('layout-e');
 
     // Sidebar Toggle
     sidebarToggleBtn.addEventListener('click', () => sidebar.classList.toggle('collapsed'));
@@ -76,9 +99,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const dashLoading = document.getElementById('dashboardLoading');
 
     // --- DOM ELEMENTS (LAYOUT B - SpikeGPT) ---
-    const spikeInput = document.getElementById('spikeInput');
-    const spikeExecuteBtn = document.getElementById('spikeExecuteBtn');
     const spikeLoading = document.getElementById('spikeLoading');
+
+    // --- DOM ELEMENTS (LAYOUT E - COMPARE ALL) ---
+    const allInput = document.getElementById('allInput');
+    const allExecuteBtn = document.getElementById('allExecuteBtn');
+    const allLoading = document.getElementById('allLoading');
 
     // --- DOM ELEMENTS (LAYOUT C - AGENCY) ---
     const agencyChatInput = document.getElementById('agencyChatInput');
@@ -108,30 +134,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (targetLayout !== currentLayout) {
                 currentLayout = targetLayout;
-                [layoutA, layoutB, layoutC, layoutD].forEach(l => {
+                [layoutA, layoutB, layoutC, layoutD, layoutE].forEach(l => {
                     l.classList.add('hidden'); l.classList.remove('active');
                 });
                 if (targetLayout === 'a') { layoutA.classList.remove('hidden'); layoutA.classList.add('active'); }
                 else if (targetLayout === 'b') { layoutB.classList.remove('hidden'); layoutB.classList.add('active'); }
                 else if (targetLayout === 'c') { layoutC.classList.remove('hidden'); layoutC.classList.add('active'); agencyChatInput.focus(); loadAgencyHistory(); }
                 else if (targetLayout === 'd') { layoutD.classList.remove('hidden'); layoutD.classList.add('active'); initEvalResults(); }
+                else if (targetLayout === 'e') { layoutE.classList.remove('hidden'); layoutE.classList.add('active'); }
             }
 
             if (currentMode !== previousMode) {
                 dashInput.value = '';
                 spikeInput.value = '';
+                allInput.value = '';
                 latestGpt2Data = {};
                 latestSpikeData = {};
                 // Reset all cards to idle state (no renderDashboard needed)
                 [...GPT2_MODELS, ...SPIKE_MODELS].forEach(id => {
-                    const col = document.getElementById(`col-${id}`);
-                    if (!col) return;
-                    col.classList.remove('dimmed');
-                    col.querySelector('.time-val').textContent = '--s';
-                    col.querySelector('.json-out').textContent = '';
-                    col.querySelector('.exec-out').textContent = '';
-                    col.querySelector('.success-icon')?.classList.add('hidden');
-                    col.querySelector('.error-icon')?.classList.add('hidden');
+                    [document.getElementById(`col-${id}`), document.getElementById(`col-all-${id}`)].forEach(col => {
+                        if (!col) return;
+                        col.classList.remove('dimmed');
+                        const t = col.querySelector('.time-val'); if(t) t.textContent = '--s';
+                        const j = col.querySelector('.json-out'); if(j) j.textContent = '';
+                        const r = col.querySelector('.raw-out');  if(r) r.textContent = '';
+                        const e = col.querySelector('.exec-out'); if(e) e.textContent = '';
+                        col.querySelector('.success-icon')?.classList.add('hidden');
+                        col.querySelector('.error-icon')?.classList.add('hidden');
+                    });
                 });
             }
         });
@@ -158,7 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!query) return;
         latestGpt2Data = {};
         GPT2_MODELS.forEach(id => setCardLoading(id, true));
-        GPT2_MODELS.forEach(modelId => {
+        for (const modelId of GPT2_MODELS) {
             fetchModelSingle(modelId, query).then(data => {
                 latestGpt2Data[modelId] = data;
                 renderCard(modelId, data);
@@ -166,7 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error(modelId, err);
                 setCardLoading(modelId, false);
             });
-        });
+            await new Promise(r => setTimeout(r, 300)); // Small delay to avoid burst
+        }
     }
 
     // ==========================================
@@ -180,13 +211,44 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!query) return;
         latestSpikeData = {};
         SPIKE_MODELS.forEach(id => setCardLoading(id, true));
-        SPIKE_MODELS.forEach(modelId => {
+        for (const modelId of SPIKE_MODELS) {
             fetchModelSingle(modelId, query).then(data => {
                 latestSpikeData[modelId] = data;
                 renderCard(modelId, data);
             }).catch(err => {
                 console.error(modelId, err);
                 setCardLoading(modelId, false);
+            });
+            await new Promise(r => setTimeout(r, 500));
+        }
+    }
+
+    // ==========================================
+    // 5. LAYOUT E: COMPARE ALL
+    // ==========================================
+    allExecuteBtn.addEventListener('click', executeCompareAll);
+    allInput.addEventListener('keypress', e => { if (e.key === 'Enter') executeCompareAll(); });
+    document.querySelectorAll('.all-chip').forEach(chip => {
+        chip.addEventListener('click', () => { allInput.value = chip.dataset.prompt; allInput.focus(); });
+    });
+
+    async function executeCompareAll() {
+        const query = allInput.value.trim();
+        if (!query) return;
+        
+        ALL_MODELS.forEach(id => setCardLoading(`all-${id}`, true));
+        
+        // Chạy song song cả 6 model
+        ALL_MODELS.forEach(modelId => {
+            fetchModelSingle(modelId, query).then(data => {
+                // Store in global state so Detail modal works
+                if (SPIKE_MODELS.includes(modelId)) latestSpikeData[modelId] = data;
+                else latestGpt2Data[modelId] = data;
+                
+                renderCard(`all-${modelId}`, data);
+            }).catch(err => {
+                console.error(modelId, err);
+                setCardLoading(`all-${modelId}`, false);
             });
         });
     }
@@ -205,8 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 5. SHARED RENDER FUNCTIONS
     // ==========================================
-    const GPT2_MODELS   = ['gpt2_small', 'gpt2_medium'];
-    const SPIKE_MODELS  = ['spike_ep78_hq', 'spike_ep78_nohq', 'spike_ep220_hq', 'spike_ft220_hq'];
+
 
     function setCardLoading(modelId, isLoading) {
         const overlay = document.getElementById(`cloading-${modelId}`);
@@ -221,27 +282,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const colEl = document.getElementById(`col-${modelId}`);
         if (!colEl || !modelData) return;
         colEl.classList.remove('dimmed');
-        colEl.querySelector('.time-val').textContent   = modelData.time || '--s';
-        colEl.querySelector('.raw-out').textContent    = modelData.text || '';
-        colEl.querySelector('.success-icon')?.classList.add('hidden');
-        colEl.querySelector('.error-icon')?.classList.add('hidden');
+        
+        const timeEl = colEl.querySelector('.time-val');
+        if (timeEl) timeEl.textContent = modelData.time || '--s';
+        
+        const rawEl = colEl.querySelector('.raw-out');
+        if (rawEl) rawEl.textContent = modelData.text || '';
+        
+        const jsonEl = colEl.querySelector('.json-out');
+        const execEl = colEl.querySelector('.exec-out');
+        const successIcon = colEl.querySelector('.success-icon');
+        const errorIcon   = colEl.querySelector('.error-icon');
+        
+        successIcon?.classList.add('hidden');
+        errorIcon?.classList.add('hidden');
+        
         if (modelData.is_tool) {
-            colEl.querySelector('.json-out').textContent = JSON.stringify({ name: modelData.tool_name, arguments: modelData.tool_args }, null, 2);
+            if (jsonEl) jsonEl.textContent = JSON.stringify({ name: modelData.tool_name, arguments: modelData.tool_args }, null, 2);
             if (modelData.execution_result && !modelData.execution_result.error) {
-                colEl.querySelector('.exec-out').textContent = JSON.stringify(modelData.execution_result, null, 2);
-                colEl.querySelector('.success-icon')?.classList.remove('hidden');
+                if (execEl) execEl.textContent = JSON.stringify(modelData.execution_result, null, 2);
+                successIcon?.classList.remove('hidden');
             } else {
-                colEl.querySelector('.exec-out').textContent = JSON.stringify(modelData.execution_result ?? {}, null, 2);
-                colEl.querySelector('.error-icon')?.classList.remove('hidden');
+                if (execEl) execEl.textContent = JSON.stringify(modelData.execution_result ?? {}, null, 2);
+                errorIcon?.classList.remove('hidden');
             }
-            colEl.querySelector('.tool-block').classList.remove('dimmed');
-            colEl.querySelector('.exec-block').classList.remove('dimmed');
+            colEl.querySelector('.tool-block')?.classList.remove('dimmed');
+            colEl.querySelector('.exec-block')?.classList.remove('dimmed');
         } else {
-            colEl.querySelector('.json-out').textContent = '// No function called';
-            colEl.querySelector('.exec-out').textContent = `// Raw: ${modelData.text || '(empty)'}`;
-            colEl.querySelector('.tool-block').classList.add('dimmed');
-            colEl.querySelector('.exec-block').classList.add('dimmed');
-            colEl.querySelector('.error-icon')?.classList.remove('hidden');
+            if (jsonEl) jsonEl.textContent = '// No function called';
+            if (execEl) execEl.textContent = `// Raw: ${modelData.text || '(empty)'}`;
+            colEl.querySelector('.tool-block')?.classList.add('dimmed');
+            colEl.querySelector('.exec-block')?.classList.add('dimmed');
+            errorIcon?.classList.remove('hidden');
         }
     }
 
@@ -290,6 +362,19 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         lucide.createIcons();
         localStorage.removeItem('agencyChatHistory');
+    }
+
+    function loadAgencyHistory() {
+        const savedHistory = localStorage.getItem('agencyChatHistory');
+        const savedModel = localStorage.getItem('agencyChatModel');
+        if (savedHistory) {
+            agencyChatHistory.innerHTML = savedHistory;
+        }
+        if (savedModel) {
+            agencyModelSelect.value = savedModel;
+        }
+        lucide.createIcons();
+        agencyChatHistory.scrollTop = agencyChatHistory.scrollHeight;
     }
 
     agencyChatSendBtn.addEventListener('click', executeAgencyChat);

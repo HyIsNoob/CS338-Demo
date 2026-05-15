@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="vi">
 
 <head>
@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="style.css?v=2.0">
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>CPU</text></svg>">
 </head>
 
 <body>
@@ -29,21 +29,25 @@
                         data-lucide="menu"></i></button>
             </div>
             <nav class="sidebar-nav">
-                <button class="nav-item active" data-mode="1" data-layout="a">
-                    <i data-lucide="bar-chart-2"></i>
-                    <span class="nav-text">Mode 1: GPT-2<br><small>Small vs Medium Finetune</small></span>
+                <button class="nav-item active" data-mode="1" data-layout="e">
+                    <i data-lucide="layers"></i>
+                    <span class="nav-text">Mode 1: So sánh<br><small>Tất cả 6 mô hình</small></span>
                 </button>
-                <button class="nav-item" data-mode="2" data-layout="b">
+                <button class="nav-item" data-mode="2" data-layout="a">
+                    <i data-lucide="bar-chart-2"></i>
+                    <span class="nav-text">Mode 2: GPT-2<br><small>Small vs Medium Finetune</small></span>
+                </button>
+                <button class="nav-item" data-mode="3" data-layout="b">
                     <i data-lucide="activity"></i>
-                    <span class="nav-text">Mode 2: SpikeGPT<br><small>4 Model Comparison</small></span>
+                    <span class="nav-text">Mode 3: SpikeGPT<br><small>4 Model Comparison</small></span>
                 </button>
-                <button class="nav-item" data-mode="3" data-layout="c">
+                <button class="nav-item" data-mode="4" data-layout="c">
                     <i data-lucide="bot"></i>
-                    <span class="nav-text">Mode 3: Agency<br><small>Chatbot Agency</small></span>
+                    <span class="nav-text">Mode 4: Agency<br><small>Chatbot Agency</small></span>
                 </button>
-                <button class="nav-item" data-mode="4" data-layout="d">
-                    <i data-lucide="bar-chart-2"></i>
-                    <span class="nav-text">Mode 4: Kết quả<br><small>Eval 5000 mẫu OOD</small></span>
+                <button class="nav-item" data-mode="5" data-layout="d">
+                    <i data-lucide="line-chart"></i>
+                    <span class="nav-text">Mode 5: Kết quả<br><small>Eval 5000 mẫu OOD</small></span>
                 </button>
             </nav>
             <div class="sidebar-footer" id="sidebarFooter">
@@ -59,6 +63,16 @@
                             style="width:10px;height:10px;border-radius:50%;background:#6B7280;flex-shrink:0;"></span>
                         <span id="backendStatusText">Kiểm tra Backend</span>
                     </button>
+                    <button onclick="window.open(API_BASE_URL, '_blank')" style="
+                        width:100%; padding:8px 12px;
+                        background:#374151; border:2px solid #4B5563; color:#D1D5DB;
+                        font-family:inherit; font-size:0.7rem; font-weight:600;
+                        cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;
+                        transition:all 0.1s; text-transform:uppercase; border-radius:4px;
+                    " onmouseover="this.style.background='#4B5563'" onmouseout="this.style.background='#374151'">
+                        <i data-lucide="external-link" style="width:14px;height:14px;"></i>
+                        Mở Ngrok
+                    </button>
                     <div style="display:flex;justify-content:space-between;align-items:center;">
                         <p style="font-size:0.8rem;">Thực hiện bởi:<br><strong>Nguyễn Khang Hy <br> Phạm Quốc
                                 Nam</strong></p>
@@ -70,9 +84,122 @@
 
         <!-- MAIN CONTENT -->
         <main class="main-content">
+            <!-- LAYOUT E: ALL-MODEL COMPARISON (New Mode 1) -->
+            <section id="layout-e" class="view-section active w-full h-full">
+                <header class="top-bar">
+                    <div class="input-wrapper">
+                        <i data-lucide="terminal" class="input-icon"></i>
+                        <input type="text" id="allInput" placeholder="Nhập yêu cầu để so sánh TẤT CẢ 6 mô hình song song..." class="brutal-input">
+                        <button id="allExecuteBtn" class="brutal-btn primary">
+                            <i data-lucide="play"></i> Thực thi
+                        </button>
+                    </div>
+                    <div class="prompt-chips">
+                        <span class="chips-label">Prompt Mẫu:</span>
+                        <button class="chip all-chip" data-prompt="Kiểm tra tình trạng tồn kho của mã sản phẩm SP-101.">Kiểm tra kho</button>
+                        <button class="chip all-chip" data-prompt="Tra cứu chi tiết đơn hàng ORD-DEMO-02 cho mình với.">Tra cứu đơn</button>
+                        <button class="chip all-chip" data-prompt="Mã sản phẩm SP-104 hiện tại còn hàng không em?">Check mã SP-104</button>
+                        <button class="chip all-chip" data-prompt="Thống kê tổng doanh thu của hệ thống tính đến thời điểm hiện tại.">Thống kê doanh thu</button>
+                        <button class="chip all-chip" data-prompt="Cho mình biết thông tin và trạng thái của đơn hàng mã ORD-HCM-01.">Thông tin đơn hàng</button>
+                    </div>
+                </header>
+                <div class="dashboard-content">
+                    <div id="allLoading" class="loading-overlay hidden">
+                        <i data-lucide="loader" class="spin-icon"></i>
+                        <span>Đang gọi 6 mô hình song song... Vui lòng chờ.</span>
+                    </div>
+                    <div class="results-grid" style="grid-template-columns: repeat(3, 1fr); gap: 12px;">
+                        <!-- Các cột cho 6 model sẽ có ID dạng col-all-{model_id} -->
+                        <div class="result-col" id="col-all-gpt2_small">
+                            <div class="col-header bg-mint">
+                                <h3>GPT-2 Small Finetune
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden" style="color:#059669;width:16px;margin-left:4px;vertical-align:middle;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden" style="color:#DC2626;width:16px;margin-left:4px;vertical-align:middle;"></i>
+                                </h3>
+                                <div class="badge time-badge"><span class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body" style="padding:8px;">
+                                <div class="card-block tool-block"><div class="code-box json-out" style="font-size:0.75rem; min-height:100px;"></div></div>
+                                <div class="card-loading-overlay hidden" id="cloading-all-gpt2_small"><i data-lucide="loader" class="spin-icon"></i></div>
+                                <button class="brutal-btn w-full detail-btn mt-2" style="padding:4px; font-size:0.7rem;" data-target="gpt2_small">Chi tiết</button>
+                            </div>
+                        </div>
+                        <div class="result-col" id="col-all-gpt2_medium">
+                            <div class="col-header bg-yellow">
+                                <h3>GPT-2 Medium Finetune
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden" style="color:#059669;width:16px;margin-left:4px;vertical-align:middle;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden" style="color:#DC2626;width:16px;margin-left:4px;vertical-align:middle;"></i>
+                                </h3>
+                                <div class="badge time-badge"><span class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body" style="padding:8px;">
+                                <div class="card-block tool-block"><div class="code-box json-out" style="font-size:0.75rem; min-height:100px;"></div></div>
+                                <div class="card-loading-overlay hidden" id="cloading-all-gpt2_medium"><i data-lucide="loader" class="spin-icon"></i></div>
+                                <button class="brutal-btn w-full detail-btn mt-2" style="padding:4px; font-size:0.7rem;" data-target="gpt2_medium">Chi tiết</button>
+                            </div>
+                        </div>
+                        <div class="result-col" id="col-all-spike_ep78_hq">
+                            <div class="col-header bg-yellow">
+                                <h3>SpikeGPT Scratch Ep78
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden" style="color:#059669;width:16px;margin-left:4px;vertical-align:middle;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden" style="color:#DC2626;width:16px;margin-left:4px;vertical-align:middle;"></i>
+                                </h3>
+                                <div class="badge time-badge"><span class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body" style="padding:8px;">
+                                <div class="card-block tool-block"><div class="code-box json-out" style="font-size:0.75rem; min-height:100px;"></div></div>
+                                <div class="card-loading-overlay hidden" id="cloading-all-spike_ep78_hq"><i data-lucide="loader" class="spin-icon"></i></div>
+                                <button class="brutal-btn w-full detail-btn mt-2" style="padding:4px; font-size:0.7rem;" data-target="spike_ep78_hq">Chi tiết</button>
+                            </div>
+                        </div>
+                        <div class="result-col" id="col-all-spike_ep78_nohq">
+                            <div class="col-header bg-pink">
+                                <h3>SpikeGPT Scratch Ep78 NoHQ
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden" style="color:#059669;width:16px;margin-left:4px;vertical-align:middle;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden" style="color:#DC2626;width:16px;margin-left:4px;vertical-align:middle;"></i>
+                                </h3>
+                                <div class="badge time-badge"><span class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body" style="padding:8px;">
+                                <div class="card-block tool-block"><div class="code-box json-out" style="font-size:0.75rem; min-height:100px;"></div></div>
+                                <div class="card-loading-overlay hidden" id="cloading-all-spike_ep78_nohq"><i data-lucide="loader" class="spin-icon"></i></div>
+                                <button class="brutal-btn w-full detail-btn mt-2" style="padding:4px; font-size:0.7rem;" data-target="spike_ep78_nohq">Chi tiết</button>
+                            </div>
+                        </div>
+                        <div class="result-col" id="col-all-spike_ep220_hq">
+                            <div class="col-header bg-mint">
+                                <h3>SpikeGPT Scratch Ep220
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden" style="color:#059669;width:16px;margin-left:4px;vertical-align:middle;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden" style="color:#DC2626;width:16px;margin-left:4px;vertical-align:middle;"></i>
+                                </h3>
+                                <div class="badge time-badge"><span class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body" style="padding:8px;">
+                                <div class="card-block tool-block"><div class="code-box json-out" style="font-size:0.75rem; min-height:100px;"></div></div>
+                                <div class="card-loading-overlay hidden" id="cloading-all-spike_ep220_hq"><i data-lucide="loader" class="spin-icon"></i></div>
+                                <button class="brutal-btn w-full detail-btn mt-2" style="padding:4px; font-size:0.7rem;" data-target="spike_ep220_hq">Chi tiết</button>
+                            </div>
+                        </div>
+                        <div class="result-col" id="col-all-spike_ft220_hq">
+                            <div class="col-header bg-purple">
+                                <h3>SpikeGPT Finetune Ep220
+                                    <i data-lucide="check-circle" class="status-icon success-icon hidden" style="color:#059669;width:16px;margin-left:4px;vertical-align:middle;"></i>
+                                    <i data-lucide="x-circle" class="status-icon error-icon hidden" style="color:#DC2626;width:16px;margin-left:4px;vertical-align:middle;"></i>
+                                </h3>
+                                <div class="badge time-badge"><span class="time-val">--s</span></div>
+                            </div>
+                            <div class="col-body" style="padding:8px;">
+                                <div class="card-block tool-block"><div class="code-box json-out" style="font-size:0.75rem; min-height:100px;"></div></div>
+                                <div class="card-loading-overlay hidden" id="cloading-all-spike_ft220_hq"><i data-lucide="loader" class="spin-icon"></i></div>
+                                <button class="brutal-btn w-full detail-btn mt-2" style="padding:4px; font-size:0.7rem;" data-target="spike_ft220_hq">Chi tiết</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-            <!-- LAYOUT A: GPT-2 COMPARISON (Mode 1) -->
-            <section id="layout-a" class="view-section active w-full h-full">
+            <!-- LAYOUT A: GPT-2 COMPARISON (Mode 2) -->
+            <section id="layout-a" class="view-section hidden w-full h-full">
                 <header class="top-bar">
                     <div class="input-wrapper">
                         <i data-lucide="terminal" class="input-icon"></i>
@@ -197,6 +324,9 @@
                         <button class="chip spike-chip"
                             data-prompt="Thống kê doanh thu từ ngày 2024-01-01 đến 2024-03-31 cho sếp xem nha.">Thống kê
                             doanh thu</button>
+                        <button class="chip spike-chip"
+                            data-prompt="Chào em, hôm qua chị có đặt đơn ORD-776, nhưng chị nhập sai địa chỉ. Đổi lại số lượng thành 2 cho chị nhé.">Cập
+                            nhật đơn hàng</button>
                         <button class="chip spike-chip" data-prompt="Kiểm tra xem mã SP-990 còn hàng không em?">Kiểm tra
                             tồn kho</button>
                     </div>
@@ -204,7 +334,7 @@
                 <div class="dashboard-content">
                     <div id="spikeLoading" class="loading-overlay hidden">
                         <i data-lucide="loader" class="spin-icon"></i>
-                        <span>SpikeGPT đang suy luận (O(N²) inference)... Vui lòng chờ.</span>
+                        <span>SpikeGPT đang suy luận (O(N2) inference)... Vui lòng chờ.</span>
                     </div>
                     <div class="results-grid" style="grid-template-columns: repeat(2, 1fr);">
 
@@ -382,17 +512,15 @@
                         </button>
                     </div>
                 </div>
-        </main>
-    </div>
-
+            </section>
 
             <!-- LAYOUT D: EVAL RESULTS (Mode 4) -->
             <section id="layout-d" class="view-section hidden w-full h-full"
                 style="overflow-y:auto;padding:24px;display:block;">
                 <div style="max-width:1400px;margin:0 auto;">
                     <div style="margin-bottom:20px;">
-                        <h1 style="font-size:1.4rem;font-weight:700;">📊 Kết quả Đánh giá — 5,000 mẫu OOD</h1>
-                        <p style="color:#6b7280;font-size:0.875rem;">Out-of-distribution test • 6 mô hình • Greedy decoding</p>
+                        <h1 style="font-size:1.4rem;font-weight:700;">Kết quả Đánh giá - 5,000 mẫu OOD</h1>
+                        <p style="color:#6b7280;font-size:0.875rem;">Out-of-distribution test - 6 mô hình - Greedy decoding</p>
                     </div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
                         <div class="card-block" style="padding:16px;"><canvas id="chart-intent"></canvas></div>
@@ -413,7 +541,7 @@
                         </table>
                     </div>
                     <div class="card-block" style="padding:20px;">
-                        <h3 style="font-size:1rem;font-weight:600;margin-bottom:12px;">📈 Biểu đồ per Model</h3>
+                        <h3 style="font-size:1rem;font-weight:600;margin-bottom:12px;">Biểu đồ per Model</h3>
                         <div id="img-tabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;"></div>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                             <img id="img-performance" src="" style="width:100%;border:2px solid #111;border-radius:4px;" alt="Overall Performance">
@@ -427,7 +555,6 @@
     </div>
 
     <!-- MODAL CHI TIẾT -->
-
     <div id="detailModal" class="modal hidden">
         <div class="modal-dialog">
             <div class="modal-header bg-dark">
