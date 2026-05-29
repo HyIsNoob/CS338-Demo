@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentLayout = "a";
     let latestGpt2Data = {};
     let latestSpikeData = {};
+    let agencyDetailPayloads = {};
 
     // --- DOM ELEMENTS (SIDEBAR) ---
     const sidebar = document.getElementById('sidebar');
@@ -170,11 +171,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 2. PROMPT CHIPS
     // ==========================================
-    document.querySelectorAll('.chip:not(.spike-chip)').forEach(chip => {
+    document.querySelectorAll('.dashboard-chip').forEach(chip => {
         chip.addEventListener('click', () => { dashInput.value = chip.dataset.prompt; dashInput.focus(); });
     });
     document.querySelectorAll('.spike-chip').forEach(chip => {
         chip.addEventListener('click', () => { spikeInput.value = chip.dataset.prompt; spikeInput.focus(); });
+    });
+    document.querySelectorAll('.agency-chip').forEach(chip => {
+        chip.addEventListener('click', () => { agencyChatInput.value = chip.dataset.prompt; agencyChatInput.focus(); });
     });
 
     // ==========================================
@@ -328,23 +332,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = isSpike ? latestSpikeData[targetModel] : latestGpt2Data[targetModel];
             if (!data) return;
 
-            modalTitle.textContent = `Chi tiết: ${targetModel.toUpperCase()}`;
-            modalRaw.textContent = data.text || '';
-            let parsedStr = `// Tool Detection: ${data.is_tool}\n\n`;
-            if (data.is_tool) {
-                parsedStr += `[TOOL NAME]:\n${data.tool_name}\n\n`;
-                parsedStr += `[ARGUMENTS]:\n${JSON.stringify(data.tool_args, null, 2)}\n\n`;
-                parsedStr += `[EXECUTION RESULT]:\n${JSON.stringify(data.execution_result, null, 2)}`;
-            } else {
-                parsedStr += 'No tool parsed from raw output.';
-            }
-            modalTool.textContent = parsedStr;
-            modal.classList.remove('hidden');
+            showDetailModal(`Chi tiết: ${targetModel.toUpperCase()}`, data);
         });
     });
 
     closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
     modal.addEventListener('click', e => { if (e.target === modal) modal.classList.add('hidden'); });
+
+    function showDetailModal(title, data) {
+        modalTitle.textContent = title;
+        modalRaw.textContent = data?.text || '';
+
+        let parsedStr = `// Tool Detection: ${Boolean(data?.is_tool)}\n\n`;
+        if (data?.is_tool) {
+            parsedStr += `[TOOL NAME]:\n${data.tool_name}\n\n`;
+            parsedStr += `[ARGUMENTS]:\n${JSON.stringify(data.tool_args || {}, null, 2)}\n\n`;
+            parsedStr += `[EXECUTION RESULT]:\n${JSON.stringify(data.execution_result ?? {}, null, 2)}`;
+        } else {
+            parsedStr += 'No tool parsed from raw output.';
+        }
+
+        modalTool.textContent = parsedStr;
+        modal.classList.remove('hidden');
+    }
 
     // ==========================================
     // 7. LAYOUT C: CHATBOT AGENCY
@@ -360,18 +370,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="bubble-content">Đã chuyển sang mô hình <strong>${selectedText}</strong>. Lịch sử đã được xoá.</div>
             </div>
         `;
+        agencyDetailPayloads = {};
         lucide.createIcons();
         localStorage.removeItem('agencyChatHistory');
+        localStorage.removeItem('agencyDetailPayloads');
     }
 
     function loadAgencyHistory() {
         const savedHistory = localStorage.getItem('agencyChatHistory');
         const savedModel = localStorage.getItem('agencyChatModel');
+        const savedDetails = localStorage.getItem('agencyDetailPayloads');
         if (savedHistory) {
             agencyChatHistory.innerHTML = savedHistory;
         }
         if (savedModel) {
             agencyModelSelect.value = savedModel;
+        }
+        if (savedDetails) {
+            try {
+                agencyDetailPayloads = JSON.parse(savedDetails) || {};
+            } catch (err) {
+                agencyDetailPayloads = {};
+            }
         }
         lucide.createIcons();
         agencyChatHistory.scrollTop = agencyChatHistory.scrollHeight;
@@ -379,6 +399,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     agencyChatSendBtn.addEventListener('click', executeAgencyChat);
     agencyChatInput.addEventListener('keypress', e => { if (e.key === 'Enter') executeAgencyChat(); });
+    agencyChatHistory.addEventListener('click', e => {
+        const btn = e.target.closest('.agency-detail-btn');
+        if (!btn) return;
+
+        const detailData = agencyDetailPayloads[btn.dataset.detailId];
+        if (!detailData) return;
+        showDetailModal(`Chi tiết: ${(detailData.model_key || 'agency').toUpperCase()}`, detailData);
+    });
 
     async function executeAgencyChat() {
         const message = agencyChatInput.value.trim();
@@ -407,9 +435,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (modelData.is_tool && modelData.execution_result?.message) {
                     botMessage = modelData.execution_result.message;
                 }
-                appendAgencyBubble(botMessage, 'ai');
+                const detailPayload = { ...modelData, model_key: selectedModel };
+                appendAgencyBubble(botMessage, 'ai', false, detailPayload);
                 if (modelData.is_tool) {
-                    renderEcommerceCard(modelData.tool_name, modelData.execution_result);
+                    renderEcommerceCard(modelData.tool_name, modelData.execution_result, detailPayload);
                 }
             } else {
                 appendAgencyBubble('⚠️ Lỗi: Phản hồi không tồn tại.', 'ai');
@@ -423,15 +452,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function appendAgencyBubble(text, sender, isLoading = false) {
-        const bubbleId = 'a-msg-' + Date.now();
+    function appendAgencyBubble(text, sender, isLoading = false, detailData = null) {
+        const bubbleId = 'a-msg-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
         const wrapper = document.createElement('div');
         wrapper.className = `chat-bubble ${sender}`;
         wrapper.id = bubbleId;
-        wrapper.innerHTML = `
-            <div class="bubble-avatar"><i data-lucide="${sender === 'user' ? 'user' : 'bot'}"></i></div>
-            <div class="bubble-content ${isLoading ? 'animate-pulse' : ''}">${text}</div>
-        `;
+
+        const avatar = document.createElement('div');
+        avatar.className = 'bubble-avatar';
+        avatar.innerHTML = `<i data-lucide="${sender === 'user' ? 'user' : 'bot'}"></i>`;
+
+        const content = document.createElement('div');
+        content.className = `bubble-content ${isLoading ? 'animate-pulse' : ''}${detailData ? ' has-detail' : ''}`;
+
+        const textEl = document.createElement('span');
+        textEl.className = 'bubble-text';
+        textEl.textContent = text;
+        content.appendChild(textEl);
+
+        if (detailData) {
+            const detailId = 'agency-detail-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+            agencyDetailPayloads[detailId] = detailData;
+
+            const detailBtn = document.createElement('button');
+            detailBtn.type = 'button';
+            detailBtn.className = 'agency-detail-btn';
+            detailBtn.dataset.detailId = detailId;
+            detailBtn.title = 'Xem tool call và kết quả backend';
+            detailBtn.setAttribute('aria-label', 'Xem chi tiết');
+            detailBtn.innerHTML = '<i data-lucide="more-vertical"></i>';
+            content.appendChild(detailBtn);
+        }
+
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(content);
         agencyChatHistory.appendChild(wrapper);
         lucide.createIcons();
         agencyChatHistory.scrollTop = agencyChatHistory.scrollHeight;
@@ -514,6 +568,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveAgencyHistory() {
         localStorage.setItem('agencyChatHistory', agencyChatHistory.innerHTML);
         localStorage.setItem('agencyChatModel', agencyModelSelect.value);
+        localStorage.setItem('agencyDetailPayloads', JSON.stringify(agencyDetailPayloads));
     }
 
     // ==========================================

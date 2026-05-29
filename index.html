@@ -12,7 +12,7 @@
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css?v=2.0">
+    <link rel="stylesheet" href="style.css?v=2.3">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>CPU</text></svg>">
 </head>
@@ -96,11 +96,11 @@
                     </div>
                     <div class="prompt-chips">
                         <span class="chips-label">Prompt Mẫu:</span>
-                        <button class="chip all-chip" data-prompt="Kiểm tra tình trạng tồn kho của mã sản phẩm SP-101.">Kiểm tra kho</button>
-                        <button class="chip all-chip" data-prompt="Tra cứu chi tiết đơn hàng ORD-DEMO-02 cho mình với.">Tra cứu đơn</button>
-                        <button class="chip all-chip" data-prompt="Mã sản phẩm SP-104 hiện tại còn hàng không em?">Check mã SP-104</button>
-                        <button class="chip all-chip" data-prompt="Thống kê tổng doanh thu của hệ thống tính đến thời điểm hiện tại.">Thống kê doanh thu</button>
-                        <button class="chip all-chip" data-prompt="Cho mình biết thông tin và trạng thái của đơn hàng mã ORD-HCM-01.">Thông tin đơn hàng</button>
+                        <button class="chip all-chip" data-prompt="Kiểm tra tồn kho mã sản phẩm SP-104 giúp mình, sản phẩm này còn bán được không?">Kho SP-104</button>
+                        <button class="chip all-chip" data-prompt="Tra cứu trạng thái đơn hàng ORD-DEMO-02.">Đơn ORD-DEMO-02</button>
+                        <button class="chip all-chip" data-prompt="Sản phẩm SP-990 trong kho còn bao nhiêu chiếc và giá hiện tại là bao nhiêu?">Kho SP-990</button>
+                        <button class="chip all-chip" data-prompt="Thống kê doanh thu từ ngày 2026-05-01 đến 2026-05-27.">Doanh thu 05/2026</button>
+                        <button class="chip all-chip" data-prompt="Tra cứu đơn ORD-HN-01, trả về trạng thái và địa chỉ giao hàng.">Đơn ORD-HN-01</button>
                     </div>
                 </header>
                 <div class="dashboard-content">
@@ -211,19 +211,19 @@
                     </div>
                     <div class="prompt-chips">
                         <span class="chips-label">Prompt Mẫu:</span>
-                        <button class="chip" data-prompt="Hủy cho mình cái đơn hàng mã #99812 nhé.">Hủy đơn
-                            hàng</button>
-                        <button class="chip"
-                            data-prompt="Mình muốn đặt 5 cái điện thoại iPhone-15-Pro, giao đến số 10 Phạm Ngọc Thạch, Quận 3, TP.HCM.">Đặt
-                            hàng iPhone</button>
-                        <button class="chip"
-                            data-prompt="Thống kê doanh thu từ ngày 2024-01-01 đến 2024-03-31 cho sếp xem nha.">Thống kê
-                            doanh thu</button>
-                        <button class="chip"
-                            data-prompt="Chào em, hôm qua chị có đặt đơn ORD-776, nhưng chị nhập sai địa chỉ. Đổi lại số lượng thành 2 cho chị nhé.">Cập
-                            nhật đơn hàng</button>
-                        <button class="chip" data-prompt="Kiểm tra xem mã SP-990 còn hàng không em?">Kiểm tra tồn
-                            kho</button>
+                        <button class="chip dashboard-chip" data-prompt="Tra cứu trạng thái đơn hàng ORD-DEMO-01.">Đơn
+                            ORD-DEMO-01</button>
+                        <button class="chip dashboard-chip"
+                            data-prompt="Kiểm tra tồn kho mã sản phẩm SP-104 giúp mình, sản phẩm này còn bán được không?">Kho
+                            SP-104</button>
+                        <button class="chip dashboard-chip"
+                            data-prompt="Sản phẩm SP-990 trong kho còn bao nhiêu chiếc và giá hiện tại là bao nhiêu?">Kho
+                            SP-990</button>
+                        <button class="chip dashboard-chip"
+                            data-prompt="Thống kê doanh thu từ ngày 2026-05-01 đến 2026-05-27.">Doanh
+                            thu 05/2026</button>
+                        <button class="chip dashboard-chip" data-prompt="Tra cứu đơn ORD-VIP-02, trả về trạng thái và địa chỉ giao hàng.">Đơn
+                            ORD-VIP-02</button>
                     </div>
                 </header>
                 <div class="dashboard-content">
@@ -316,19 +316,19 @@
                     </div>
                     <div class="prompt-chips">
                         <span class="chips-label">Prompt Mẫu:</span>
-                        <button class="chip spike-chip" data-prompt="Hủy cho mình cái đơn hàng mã #99812 nhé.">Hủy đơn
-                            hàng</button>
+                        <button class="chip spike-chip" data-prompt="Tra cứu trạng thái đơn hàng ORD-DEMO-03.">Đơn
+                            ORD-DEMO-03</button>
                         <button class="chip spike-chip"
-                            data-prompt="Mình muốn đặt 5 cái điện thoại iPhone-15-Pro, giao đến số 10 Phạm Ngọc Thạch, Quận 3, TP.HCM.">Đặt
-                            hàng iPhone</button>
+                            data-prompt="Kiểm tra tồn kho mã sản phẩm SP-204 giúp mình, sản phẩm này còn bán được không?">Kho
+                            SP-204</button>
                         <button class="chip spike-chip"
-                            data-prompt="Thống kê doanh thu từ ngày 2024-01-01 đến 2024-03-31 cho sếp xem nha.">Thống kê
-                            doanh thu</button>
+                            data-prompt="Sản phẩm IPHONE-15-PRO trong kho còn bao nhiêu chiếc và giá hiện tại là bao nhiêu?">Kho
+                            iPhone</button>
                         <button class="chip spike-chip"
-                            data-prompt="Chào em, hôm qua chị có đặt đơn ORD-776, nhưng chị nhập sai địa chỉ. Đổi lại số lượng thành 2 cho chị nhé.">Cập
-                            nhật đơn hàng</button>
-                        <button class="chip spike-chip" data-prompt="Kiểm tra xem mã SP-990 còn hàng không em?">Kiểm tra
-                            tồn kho</button>
+                            data-prompt="Thống kê doanh thu từ ngày 2026-05-01 đến 2026-05-27.">Doanh
+                            thu 05/2026</button>
+                        <button class="chip spike-chip" data-prompt="Kiểm tra trạng thái giao hàng của mã đơn ORD-10038 và cho biết địa chỉ đang giao.">Đơn
+                            ORD-10038</button>
                     </div>
                 </header>
                 <div class="dashboard-content">
@@ -475,42 +475,50 @@
             </section>
 
             <!-- LAYOUT C: CHATBOT AGENCY (Mode 3) -->
-            <section id="layout-c" class="view-section hidden w-full h-full"
-                style="align-items:center; justify-content:center;">
-                <div class="chat-container"
-                    style="width:100%; max-width:1000px; height:100%; display:flex; flex-direction:column;">
-                    <header class="chat-header"
-                        style="display:flex; justify-content:space-between; align-items:center; padding:16px 24px;">
-                        <div style="display:flex; gap:12px; align-items:center;">
-                            <i data-lucide="bot" style="width:28px; height:28px;"></i>
-                            <select id="agencyModelSelect" class="brutal-select">
-                                <option value="gpt2_small">GPT-2 Small Finetune (124M)</option>
-                                <option value="gpt2_medium">GPT-2 Medium Finetune (355M)</option>
-                                <option value="spike_ep78_hq">SpikeGPT Scratch Ep78 + HeadQK</option>
-                                <option value="spike_ep78_nohq">SpikeGPT Scratch Ep78 No HeadQK</option>
-                                <option value="spike_ep220_hq">SpikeGPT Scratch Ep220 + HeadQK</option>
-                                <option value="spike_ft220_hq">SpikeGPT Finetune Ep220 + HeadQK</option>
-                            </select>
+            <section id="layout-c" class="view-section hidden w-full h-full">
+                <div class="agency-shell">
+                    <div class="chat-container">
+                        <header class="chat-header">
+                            <div class="agency-model-picker">
+                                <i data-lucide="bot"></i>
+                                <select id="agencyModelSelect" class="brutal-select">
+                                    <option value="gpt2_small">GPT-2 Small Finetune (124M)</option>
+                                    <option value="gpt2_medium">GPT-2 Medium Finetune (355M)</option>
+                                    <option value="spike_ep78_hq">SpikeGPT Scratch Ep78 + HeadQK</option>
+                                    <option value="spike_ep78_nohq">SpikeGPT Scratch Ep78 No HeadQK</option>
+                                    <option value="spike_ep220_hq">SpikeGPT Scratch Ep220 + HeadQK</option>
+                                    <option value="spike_ft220_hq">SpikeGPT Finetune Ep220 + HeadQK</option>
+                                </select>
+                            </div>
+                            <button id="resetAgencyChatBtn" class="brutal-btn square" title="Reset Chat">
+                                <i data-lucide="rotate-ccw"></i>
+                            </button>
+                        </header>
+                        <div class="chat-history" id="agencyChatHistory">
+                            <div class="chat-bubble ai">
+                                <div class="bubble-avatar"><i data-lucide="bot"></i></div>
+                                <div class="bubble-content">Xin chào, tôi là Chatbot Agency. Vui lòng chọn mô hình và bắt
+                                    đầu giao tiếp!</div>
+                            </div>
                         </div>
-                        <button id="resetAgencyChatBtn" class="brutal-btn square" style="margin-left:auto;"
-                            title="Reset Chat">
-                            <i data-lucide="rotate-ccw"></i>
-                        </button>
-                    </header>
-                    <div class="chat-history" id="agencyChatHistory">
-                        <div class="chat-bubble ai">
-                            <div class="bubble-avatar"><i data-lucide="bot"></i></div>
-                            <div class="bubble-content">Xin chào, tôi là Chatbot Agency. Vui lòng chọn mô hình và bắt
-                                đầu giao tiếp!</div>
+                        <div class="chat-input-area">
+                            <div class="agency-input-row">
+                                <input type="text" id="agencyChatInput" placeholder="Nhập yêu cầu từ người dùng..."
+                                    class="brutal-input">
+                                <button id="agencyChatSendBtn" class="brutal-btn primary square">
+                                    <i data-lucide="send"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="chat-input-area" style="display:flex; gap:8px;">
-                        <input type="text" id="agencyChatInput" placeholder="Nhập yêu cầu từ người dùng..."
-                            class="brutal-input" style="flex:1;">
-                        <button id="agencyChatSendBtn" class="brutal-btn primary square">
-                            <i data-lucide="send"></i>
-                        </button>
-                    </div>
+                    <aside class="agency-toolbar" aria-label="Prompt mẫu cho Agency">
+                        <button class="agency-chip" data-prompt="Kiểm tra tồn kho mã sản phẩm SP-104 giúp mình."><i data-lucide="package"></i><span>Tồn kho</span></button>
+                        <button class="agency-chip" data-prompt="Đặt 2 sản phẩm SP-603 giao đến Đại học Bách Khoa, Quận 10, TP.HCM."><i data-lucide="shopping-cart"></i><span>Tạo đơn</span></button>
+                        <button class="agency-chip" data-prompt="Tra cứu trạng thái đơn hàng ORD-DEMO-02."><i data-lucide="search"></i><span>Tra đơn</span></button>
+                        <button class="agency-chip" data-prompt="Cập nhật số lượng đơn ORD-776 thành 2, địa chỉ đổi thành 32/2, đường Sơn Kì"><i data-lucide="edit"></i><span>Cập nhật</span></button>
+                        <button class="agency-chip" data-prompt="Hủy đơn hàng mã 99812."><i data-lucide="trash-2"></i><span>Hủy đơn</span></button>
+                        <button class="agency-chip" data-prompt="Thống kê doanh thu từ ngày 2026-05-01 đến 2026-05-27."><i data-lucide="bar-chart-2"></i><span>Doanh thu</span></button>
+                    </aside>
                 </div>
             </section>
 
@@ -574,7 +582,7 @@
         </div>
     </div>
 
-    <script src="app.js?v=2.0"></script>
+    <script src="app.js?v=2.3"></script>
     <script>
         if (typeof lucide !== 'undefined') { lucide.createIcons(); }
     </script>

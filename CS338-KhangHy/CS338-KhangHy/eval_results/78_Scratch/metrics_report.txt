@@ -1,0 +1,25 @@
+=== BÁO CÁO ĐÁNH GIÁ MÔ HÌNH: Scratch78(best) ===
+Cấu hình HeadQK: 256
+----------------------------------------
+1. Sinh JSON hợp lệ (Valid JSON) : 95.98%
+2. Chọn đúng Tool (Intent Acc)   : 84.64%
+3. Copy đúng ID (Args Exact Match): 1.78%
+----------------------------------------
+Precision (Weighted): 0.8944
+Recall (Weighted)   : 0.8464
+F1 Score (Weighted) : 0.8655
+----------------------------------------
+CHI TIẾT PHÂN LOẠI TOOL:
+                  precision    recall  f1-score   support
+
+ check_inventory       0.86      0.85      0.85       877
+    create_order       0.87      0.83      0.85       832
+    delete_order       0.99      0.78      0.87       840
+       get_order       0.70      0.85      0.77       810
+    invalid_json       0.00      0.00      0.00         0
+revenue_analysis       0.99      1.00      1.00       789
+    update_order       0.96      0.79      0.87       852
+
+        accuracy                           0.85      5000
+       macro avg       0.77      0.73      0.74      5000
+    weighted avg       0.89      0.85      0.87      5000

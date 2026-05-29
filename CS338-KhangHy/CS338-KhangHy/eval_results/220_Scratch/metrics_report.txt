@@ -1,0 +1,26 @@
+=== BÁO CÁO ĐÁNH GIÁ MÔ HÌNH: Scratch220(best) ===
+Cấu hình HeadQK: 256
+----------------------------------------
+1. Sinh JSON hợp lệ (Valid JSON) : 91.52%
+2. Chọn đúng Tool (Intent Acc)   : 81.24%
+3. Copy đúng ID (Args Exact Match): 4.68%
+----------------------------------------
+Precision (Weighted): 0.9022
+Recall (Weighted)   : 0.8124
+F1 Score (Weighted) : 0.8463
+----------------------------------------
+CHI TIẾT PHÂN LOẠI TOOL:
+                  precision    recall  f1-score   support
+
+ check_inventory       0.97      0.81      0.88       877
+    create_order       0.89      0.77      0.83       832
+    delete_order       0.95      0.84      0.89       840
+       get_order       0.73      0.84      0.78       810
+    invalid_json       0.00      0.00      0.00         0
+   no_json_found       0.00      0.00      0.00         0
+revenue_analysis       0.87      1.00      0.93       789
+    update_order       1.00      0.63      0.77       852
+
+        accuracy                           0.81      5000
+       macro avg       0.68      0.61      0.64      5000
+    weighted avg       0.90      0.81      0.85      5000
